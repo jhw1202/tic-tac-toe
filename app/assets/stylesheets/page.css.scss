@@ -1,0 +1,44 @@
+.container {
+  width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+}
+
+/* tictactoe board stuff */
+
+table {
+  width: 80%;
+  margin: 0 auto;
+}
+
+td {
+  width: 180px;
+  height: 180px;
+  border-bottom: 10px solid black;
+  border-right: 10px solid black;
+}
+
+td:hover {
+  background-color: #00FFFF;
+  opacity: 0.7;
+}
+
+.lastrow td {
+  border-bottom: none;
+}
+
+.end {
+  border-right: none;
+  border-bottom: 10px solid black;
+}
+
+/* board icon */
+
+img {
+  max-width: 90%;
+  max-height: 90%;
+  margin: 0 auto;
+}
