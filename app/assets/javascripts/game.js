@@ -72,6 +72,7 @@ $(document).ready(function(){
     else if (board.moveCount > 1) {
       if (checkGameWon()) {
         placeAiIcon(checkGameWon())
+        // alert("game over")
       }
       else if (blockUser() === false) {
         // console.log("nothing to block, some corners left")
@@ -89,7 +90,7 @@ $(document).ready(function(){
 
   // function to check if user has 2/3
   var blockUser = function(){
-    filterPossibleWins()
+    // filterPossibleWins()
     var breakLoop = false
     var blockToMake = false // is there a need to make a block at all?
     $.each(possibleWins, function(outerIndex, row){
@@ -108,7 +109,10 @@ $(document).ready(function(){
           }
         })
         if (breakLoop === true){
+          console.log('move to block')
+          console.log(possibleWins.join('\n'))
           possibleWins.splice(possibleWins.indexOf(row),1)
+          console.log(possibleWins.join('\n'))
         }
       }
     })
@@ -170,6 +174,7 @@ $(document).ready(function(){
   }
   // icon placement functions
   var placeAiIcon = function(cellNum) {
+    console.log(possibleWins.join('\n'))
     // console.log(cellNum)
     // console.log("gameboard: " + gameBoard)
     // console.log("aiMoves " + aiMoves)
@@ -191,7 +196,10 @@ $(document).ready(function(){
     else {
       // var move =gameBoard[Math.floor(Math.random()*gameBoard.length)]
       filterPossibleWins(cellNum)
-      makeAiMove({moveCount: moveCount})
+      if(blockUser() === false){
+        aiAttack()
+      }
+      // makeAiMove({moveCount: moveCount})
       // elemFinder(move).html("<img src='/assets/ai-icon.jpg'>")
     }
     checkGameWon()
@@ -215,10 +223,11 @@ $(document).ready(function(){
 
   var checkGameWon = function(){
     var gameFinished
-    var rows = filterPossibleWins([[1,2,3],[4,5,6],[7,8,9],[1,4,7],
-                [2,5,8],[3,6,9],[1,5,9],[3,5,7]])
+    var rows = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],
+                [2,5,8],[3,6,9],[1,5,9],[3,5,7]]
     var canFinishGame = false
     var finishMove
+    // console.log(rows)
     $.each(rows,function(i,row){
       var counter = 0
       $.each(aiMoves, function(index, move){
@@ -227,6 +236,7 @@ $(document).ready(function(){
         }
         if (counter === 3){
           gameFinished = true
+          alert("game over")
         }
       })
       if (counter === 2){
@@ -246,11 +256,13 @@ $(document).ready(function(){
   }
 
   var filterPossibleWins = function(cellNum){
+    console.log("filetering " + cellNum)
     $.each(possibleWins, function(i,row){
       if(row !== undefined && row.indexOf(cellNum) !== -1){
         possibleWins.splice(i, 1)
       }
     })
+    console.log(possibleWins.join('\n'))
   }
 
 })
