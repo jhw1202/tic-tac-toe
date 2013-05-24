@@ -10,7 +10,7 @@ $(document).ready(function(){
   $('td').click(function(){
     var currentMove = parseInt($(this).attr('cell'))
     // valid move
-    if (placeUserIcon(currentMove)) {
+    if (placeUserIcon(currentMove) === true) {
       playerMoves.push(currentMove)
       var removeIndex = corners.indexOf(currentMove)
       // corner move?
@@ -31,32 +31,65 @@ $(document).ready(function(){
     }
   })
 
-
-
   var makeAiMove = function(board){
+    var stringifyMoves = playerMoves.sort().toString()
     if (board.moveCount === 9) {
       alert("Game finished")
     }
     else if (board.moveCount === 1 && board.cornerMove === true) {
-      console.log("first move is a corner move so put on 5")
       placeAiIcon(5)
     }
     else if (board.moveCount === 1 && board.cornerMove === false) {
-      console.log("first move not a corner move so pick a corner")
-      var move =corners[Math.floor(Math.random()*corners.length)]
-      placeAiIcon(move)
-      corners.splice(corners.indexOf(move),1)
+      if (board.playerMove !== 5){
+        placeAiIcon(5)
+      }
+      else{
+        var move =corners[Math.floor(Math.random()*corners.length)]
+        placeAiIcon(move)
+        corners.splice(corners.indexOf(move),1)
+      }
     }
+    // block off possible forks. Is there a better way to do this?
+    else if (stringifyMoves === "2,6" || stringifyMoves === "4,8"){
+      var move = gameBoard.indexOf(1)
+      if (move === -1){
+        placeAiIcon(9)
+      }
+      else{
+        placeAiIcon(1)
+      }
+    }
+    else if (stringifyMoves === "2,4" || stringifyMoves === "6,8"){
+      var move = gameBoard.indexOf(3)
+      if (move === -1){
+        placeAiIcon(7)
+      }
+      else{
+        placeAiIcon(3)
+      }
+    }
+
     else if (board.moveCount > 1) {
-      if (blockUser() === false) {
-        console.log("tried running blockuser but nothing to block so random placement")
-        aiAttack()
+      if (checkGameWon()) {
+        placeAiIcon(checkGameWon())
+      }
+      else if (blockUser() === false) {
+        // console.log("nothing to block, some corners left")
+        // if (corners.length > 0){
+        //   var move =corners[Math.floor(Math.random()*corners.length)]
+        //   placeAiIcon(move)
+        //   corners.splice(corners.indexOf(move),1)
+        // }
+        // else{
+          aiAttack()
+        // }
       }
     }
   }
 
   // function to check if user has 2/3
   var blockUser = function(){
+    filterPossibleWins()
     var breakLoop = false
     var blockToMake = false // is there a need to make a block at all?
     $.each(possibleWins, function(outerIndex, row){
@@ -67,11 +100,11 @@ $(document).ready(function(){
             counter += 1
           }
           if (counter === 2) {
-            console.log("there's a move to block  " + row)
             var move = findMoveToBlock(row)
             placeAiIcon(move)
             blockToMake = true
             breakLoop = true
+            counter = 0
           }
         })
         if (breakLoop === true){
@@ -87,83 +120,137 @@ $(document).ready(function(){
     var moveToMake
     $.each(row, function(i, move){
       if (playerMoves.indexOf(move) === -1) {
-        console.log("this move to block  " + move)
         moveToMake = move
       }
     })
-    console.log("return this" + moveToMake)
     return moveToMake
   }
 
 
   // Human is being silly. Attack!
   var aiAttack = function(){
+    console.log("attaack")
     var attacked = false
     $.each(possibleWins, function(i,  row){
       if (attacked === false) {
         var counter = 0
         $.each(aiMoves, function(index,move){
           if (row.indexOf(move) !== -1){
-            console.log("attack")
+            // console.log("attack")
+            counter += 1
+            // attacked = true
+            // placeAiIcon(findMoveToAttack(row))
+            // possibleWins.splice(possibleWins.indexOf(row), 1)
+          }
+          if (counter === 2) {
+            counter = 0
             attacked = true
             placeAiIcon(findMoveToAttack(row))
-            possibleWins.splice(possibleWins.indexOf(row), 1)
           }
         })
       }
     })
-    // if (attacked === false){
-    //   console.log("get here")
-    //   var move = gameBoard[Math.floor(Math.random()*gameBoard.length)]
-    //   console.log("random move " + move)
-    //   placeAiIcon(move)
-    // }
+    if (attacked === false){
+      var move = gameBoard[Math.floor(Math.random()*gameBoard.length)]
+      placeAiIcon(move)
+    }
+
   }
 
-
   var findMoveToAttack = function(row){
-    var moveToMake
+    var moveToMake = false
     $.each(row, function(i, move){
-      if (aiMoves.indexOf(move) === -1) {
-        console.log("this move to attack  " + move)
-        moveToMake = move
+      if (moveToMake === false){
+        if (aiMoves.indexOf(move) === -1) {
+          moveToMake = move
+        }
       }
     })
     return moveToMake
   }
   // icon placement functions
   var placeAiIcon = function(cellNum) {
+    // console.log(cellNum)
+    // console.log("gameboard: " + gameBoard)
+    // console.log("aiMoves " + aiMoves)
+    // console.log("playerMoves" + playerMoves)
+    // console.log(elemFinder(cellNum).children().length)
+    // console.log(elemFinder(cellNum))
     if (elemFinder(cellNum).children().length === 0){
-      console.log("free space so go for it")
+      // filterPossibleWins(cellNum)
       moveCount += 1
       aiMoves.push(cellNum)
       $("[cell="+cellNum.toString()+"]").html("<img src='/assets/ai-icon.jpg'>")
-      console.log("aimove is " + cellNum)
       gameBoard.splice(gameBoard.indexOf(cellNum),1)
     }
+    // else if (corners.length > 0) {
+    //   var move = corners[Math.floor(Math.random()*corners.length)]
+    //   corners.splice(corners.indexOf(move), 1)
+    //   placeAiIcon(move)
+    // }
     else {
-      console.log("space already occupied so random")
-      var move =gameBoard[Math.floor(Math.random()*gameBoard.length)]
-      elemFinder(move).html("<img src='/assets/ai-icon.jpg'>")
+      // var move =gameBoard[Math.floor(Math.random()*gameBoard.length)]
+      filterPossibleWins(cellNum)
+      makeAiMove({moveCount: moveCount})
+      // elemFinder(move).html("<img src='/assets/ai-icon.jpg'>")
     }
+    checkGameWon()
   }
 
-
   var placeUserIcon = function(cellNum){
-    if ($("[cell="+cellNum.toString()+"]").children().length === 0){
+    var movePlaced
+    console.log(elemFinder(cellNum))
+    console.log(elemFinder(cellNum).children().length === 0)
+    if (elemFinder(cellNum).children().length === 0){
       moveCount += 1
-      $("[cell="+cellNum.toString()+"]").html("<img src='/assets/user-icon.jpg'>")
+      elemFinder(cellNum).html("<img src='/assets/user-icon.jpg'>")
       gameBoard.splice(gameBoard.indexOf(cellNum),1)
-      return true
+      movePlaced = true
     }
     else {
-      return false
+      movePlaced = false
     }
+    return movePlaced
+  }
+
+  var checkGameWon = function(){
+    var gameFinished
+    var rows = filterPossibleWins([[1,2,3],[4,5,6],[7,8,9],[1,4,7],
+                [2,5,8],[3,6,9],[1,5,9],[3,5,7]])
+    var canFinishGame = false
+    var finishMove
+    $.each(rows,function(i,row){
+      var counter = 0
+      $.each(aiMoves, function(index, move){
+        if (row.indexOf(move) !== -1){
+          counter += 1
+        }
+        if (counter === 3){
+          gameFinished = true
+        }
+      })
+      if (counter === 2){
+        finishMove = findMoveToAttack(row)
+      }
+    })
+
+    if(gameFinished === true){
+      $('td').unbind('click')
+    }
+    return finishMove
   }
 
   // element finder
   var elemFinder = function(cellNum){
-    return $("[cell="+cellNum.toString()+"]")
+    return ($("[cell="+cellNum.toString()+"]"))
+  }
+
+  var filterPossibleWins = function(cellNum){
+    $.each(possibleWins, function(i,row){
+      if(row !== undefined && row.indexOf(cellNum) !== -1){
+        possibleWins.splice(i, 1)
+      }
+    })
   }
 
 })
