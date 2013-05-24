@@ -256,6 +256,7 @@ $(document).ready(function(){
   }
 
   var filterPossibleWins = function(cellNum){
+    cellNum = checkConflict()
     console.log("filetering " + cellNum)
     $.each(possibleWins, function(i,row){
       if(row !== undefined && row.indexOf(cellNum) !== -1){
@@ -263,6 +264,17 @@ $(document).ready(function(){
       }
     })
     console.log(possibleWins.join('\n'))
+  }
+
+  var checkConflict = function(){
+    var moves = aiMoves.concat(playerMoves).sort()
+    var overlaps = []
+    for (var i = 0; i < moves.length - 1; i++) {
+      if (moves[i + 1] == moves[i]) {
+          overlaps.push(moves[i]);
+      }
+    }
+    return overlaps[(overlaps.length) - 1]
   }
 
 })
