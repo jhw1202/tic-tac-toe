@@ -12,6 +12,7 @@ $(document).ready(function(){
     // valid move
     if (placeUserIcon(currentMove) === true) {
       playerMoves.push(currentMove)
+      checkConflict()
       var removeIndex = corners.indexOf(currentMove)
       // corner move?
       if (removeIndex !== -1) {
@@ -32,6 +33,7 @@ $(document).ready(function(){
   })
 
   var makeAiMove = function(board){
+    checkConflict()
     var stringifyMoves = playerMoves.sort().toString()
     if (board.moveCount === 9) {
       alert("Game finished")
@@ -68,29 +70,33 @@ $(document).ready(function(){
         placeAiIcon(3)
       }
     }
-
+    // another group of forks. Eventually try to take out hardcoding
+    else if (stringifyMoves === "3,8" || stringifyMoves === "6,7"){
+      placeAiIcon(9)
+    }
+    else if (stringifyMoves === "2,9" || stringifyMoves === "1,6"){
+      placeAiIcon(3)
+    }
+    else if (stringifyMoves === "2,7" || stringifyMoves === "3,4"){
+      placeAiIcon(1)
+    }
+    else if (stringifyMoves === "4,9" || stringifyMoves === "1,8"){
+      placeAiIcon(7)
+    }
     else if (board.moveCount > 1) {
       if (checkGameWon()) {
         placeAiIcon(checkGameWon())
         // alert("game over")
       }
       else if (blockUser() === false) {
-        // console.log("nothing to block, some corners left")
-        // if (corners.length > 0){
-        //   var move =corners[Math.floor(Math.random()*corners.length)]
-        //   placeAiIcon(move)
-        //   corners.splice(corners.indexOf(move),1)
-        // }
-        // else{
-          aiAttack()
-        // }
+        aiAttack()
       }
     }
   }
 
   // function to check if user has 2/3
   var blockUser = function(){
-    // filterPossibleWins()
+    console.log("checking if block needed")
     var breakLoop = false
     var blockToMake = false // is there a need to make a block at all?
     $.each(possibleWins, function(outerIndex, row){
@@ -110,9 +116,6 @@ $(document).ready(function(){
         })
         if (breakLoop === true){
           console.log('move to block')
-          console.log(possibleWins.join('\n'))
-          possibleWins.splice(possibleWins.indexOf(row),1)
-          console.log(possibleWins.join('\n'))
         }
       }
     })
@@ -140,13 +143,10 @@ $(document).ready(function(){
         var counter = 0
         $.each(aiMoves, function(index,move){
           if (row.indexOf(move) !== -1){
-            // console.log("attack")
             counter += 1
-            // attacked = true
-            // placeAiIcon(findMoveToAttack(row))
-            // possibleWins.splice(possibleWins.indexOf(row), 1)
           }
-          if (counter === 2) {
+          if (counter === 1) {
+            console.log("this row "+row)
             counter = 0
             attacked = true
             placeAiIcon(findMoveToAttack(row))
@@ -155,7 +155,9 @@ $(document).ready(function(){
       }
     })
     if (attacked === false){
+      // checkConflict()
       var move = gameBoard[Math.floor(Math.random()*gameBoard.length)]
+      console.log("random")
       placeAiIcon(move)
     }
 
@@ -172,43 +174,27 @@ $(document).ready(function(){
     })
     return moveToMake
   }
-  // icon placement functions
+
+  // ai icon placement
   var placeAiIcon = function(cellNum) {
-    console.log(possibleWins.join('\n'))
-    // console.log(cellNum)
-    // console.log("gameboard: " + gameBoard)
-    // console.log("aiMoves " + aiMoves)
-    // console.log("playerMoves" + playerMoves)
-    // console.log(elemFinder(cellNum).children().length)
-    // console.log(elemFinder(cellNum))
     if (elemFinder(cellNum).children().length === 0){
-      // filterPossibleWins(cellNum)
       moveCount += 1
       aiMoves.push(cellNum)
       $("[cell="+cellNum.toString()+"]").html("<img src='/assets/ai-icon.jpg'>")
       gameBoard.splice(gameBoard.indexOf(cellNum),1)
     }
-    // else if (corners.length > 0) {
-    //   var move = corners[Math.floor(Math.random()*corners.length)]
-    //   corners.splice(corners.indexOf(move), 1)
-    //   placeAiIcon(move)
-    // }
     else {
-      // var move =gameBoard[Math.floor(Math.random()*gameBoard.length)]
-      filterPossibleWins(cellNum)
       if(blockUser() === false){
         aiAttack()
       }
-      // makeAiMove({moveCount: moveCount})
-      // elemFinder(move).html("<img src='/assets/ai-icon.jpg'>")
     }
     checkGameWon()
   }
 
+  // user icon placement functions
+
   var placeUserIcon = function(cellNum){
     var movePlaced
-    console.log(elemFinder(cellNum))
-    console.log(elemFinder(cellNum).children().length === 0)
     if (elemFinder(cellNum).children().length === 0){
       moveCount += 1
       elemFinder(cellNum).html("<img src='/assets/user-icon.jpg'>")
@@ -221,13 +207,13 @@ $(document).ready(function(){
     return movePlaced
   }
 
+  // check if game is finished
   var checkGameWon = function(){
     var gameFinished
     var rows = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],
                 [2,5,8],[3,6,9],[1,5,9],[3,5,7]]
     var canFinishGame = false
     var finishMove
-    // console.log(rows)
     $.each(rows,function(i,row){
       var counter = 0
       $.each(aiMoves, function(index, move){
@@ -255,27 +241,58 @@ $(document).ready(function(){
     return ($("[cell="+cellNum.toString()+"]"))
   }
 
-  var filterPossibleWins = function(cellNum){
-    cellNum = checkConflict()
-    console.log("filetering " + cellNum)
-    $.each(possibleWins, function(i,row){
-      if(row !== undefined && row.indexOf(cellNum) !== -1){
-        possibleWins.splice(i, 1)
-      }
-    })
-    console.log(possibleWins.join('\n'))
-  }
-
+  //if user and ai block each other, remove that row from possible rows
   var checkConflict = function(){
     var moves = aiMoves.concat(playerMoves).sort()
-    var overlaps = []
-    for (var i = 0; i < moves.length - 1; i++) {
-      if (moves[i + 1] == moves[i]) {
-          overlaps.push(moves[i]);
+    var rowToDelete = []
+    $.each(possibleWins, function(index, row){
+      if(moveInRow({user: true, row: row}) && moveInRow({ai:true, row:row})){
+        rowToDelete.push(row)
+      }
+    })
+    $.each(rowToDelete, function(i, row){
+      var deleteIndex = possibleWins.indexOf(row)
+      possibleWins.splice(deleteIndex,1)
+    })
+    // debugger
+  }
+
+  var moveInRow = function(options){
+    var move = false
+    if(options.user){
+      for (var i = 0; i < playerMoves.length; i++) {
+        if(move === false && options.row.indexOf(playerMoves[i]) !== -1){
+          move = true
+        }
       }
     }
-    return overlaps[(overlaps.length) - 1]
+    else{
+      for (var i = 0; i < aiMoves.length; i++) {
+        if(move === false && options.row.indexOf(aiMoves[i]) !== -1){
+          move = true
+        }
+      }
+    }
+    return move
   }
 
 })
+
+
+
+// var ai = false
+// var user = false
+// for (var i = 0; i < playerMoves.length; i++) {
+//   if(user === false && row.indexOf(playerMoves[i]) !== -1){
+//     user = true
+//   }
+// }
+// for (var i = 0; i < aiMoves.length; i++){
+//   if(ai === false && row.indexOf(aiMoves !== -1)){
+//     ai = true
+//   }
+// }
+// if (user && ai){
+//   rowToDelete.push(row)
+// }
 
