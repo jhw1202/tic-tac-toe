@@ -7,12 +7,13 @@ gem 'rails', '3.2.13'
 
 gem 'pg'
 gem 'thin'
-gem 'rspec-rails'
 
 group :development, :test do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'jasmine'
+  gem 'rspec-rails'
+  gem 'capybara'
 end
 
 # Gems used only for assets and not required
