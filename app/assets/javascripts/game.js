@@ -180,7 +180,7 @@ $(document).ready(function(){
     if (elemFinder(cellNum).children().length === 0){
       moveCount += 1
       aiMoves.push(cellNum)
-      $("[cell="+cellNum.toString()+"]").html("<img src='/assets/ai-icon.jpg'>")
+      $("[cell="+cellNum.toString()+"]").html("<img class='ai-icon' src='/assets/ai-icon.jpg'>")
       gameBoard.splice(gameBoard.indexOf(cellNum),1)
     }
     else {
@@ -197,7 +197,7 @@ $(document).ready(function(){
     var movePlaced
     if (elemFinder(cellNum).children().length === 0){
       moveCount += 1
-      elemFinder(cellNum).html("<img src='/assets/user-icon.jpg'>")
+      elemFinder(cellNum).html("<img class='user-icon' src='/assets/user-icon.jpg'>")
       gameBoard.splice(gameBoard.indexOf(cellNum),1)
       movePlaced = true
     }
