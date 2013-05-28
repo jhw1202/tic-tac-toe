@@ -8,7 +8,13 @@ describe("Game", function(){
     moveCount = 0
   })
 
-  describe("blocking user's attack", function(){
+  describe("when user attacks", function(){
+    it("should find correct move to block", function(){
+      playerMoves.push(1,3)
+      aiMoves.push(5)
+      expect(findMoveToBlock([1,2,3])).toEqual(2)
+    })
+
     it("should block a possible winning row", function(){
       playerMoves.push(1,3)
       aiMoves.push(5)
@@ -16,6 +22,7 @@ describe("Game", function(){
       makeAiMove({cornerMove: true})
       expect(aiMoves.sort()).toEqual([2,5])
     })
+
   })
 
   describe("updating possible winning rows", function(){
@@ -32,23 +39,6 @@ describe("Game", function(){
 
   describe("AI attack", function(){
 
-    describe("attack function", function(){
-      beforeEach(function(){
-        spyOn(window,'aiAttack')
-        placeUserIcon(1)
-        makeAiMove({currentMove:1, cornerMove:true})
-        placeUserIcon(3)
-        makeAiMove({currentMove:3, cornerMove:true})
-        placeUserIcon(5)
-      })
-
-      it("should call attack function when nothing to block", function(){
-        makeAiMove({currentMove:5, cornerMove:false})
-        expect(window.aiAttack).toHaveBeenCalled()
-      })
-
-    })
-
     describe("winning game", function(){
       it("should win game when there is an opportunity", function(){
         playerMoves.push(1,2,8)
@@ -58,6 +48,7 @@ describe("Game", function(){
         expect(aiMoves.sort()).toEqual([3,5,7])
       })
     })
+
   })
 
 })

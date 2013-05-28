@@ -149,7 +149,6 @@ var aiAttack = function(){
           counter += 1
         }
         if (counter === 1) {
-          console.log("this row "+row)
           counter = 0
           attacked = true
           placeAiIcon(findMoveToAttack(row))
@@ -225,7 +224,6 @@ var checkGameWon = function(){
       }
       if (counter === 3){
         gameFinished = true
-        console.log(row)
         alert("game over")
       }
     })
