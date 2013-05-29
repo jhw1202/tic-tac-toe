@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-  $('td').click(function(){
+  $('td').on('click',function(){
     var currentMove = parseInt($(this).attr('cell'))
     // valid move
     if (placeUserIcon(currentMove) === true) {
@@ -99,7 +99,6 @@ var makeAiMove = function(board){
 
 // function to check if user has 2/3
 var blockUser = function(){
-  console.log("checking if block needed")
   var breakLoop = false
   var blockToMake = false // is there a need to make a block at all?
   $.each(possibleWins, function(outerIndex, row){
@@ -139,7 +138,6 @@ var findMoveToBlock = function(row){
 
 // Human is being silly. Attack!
 var aiAttack = function(){
-  console.log("attaack")
   var attacked = false
   $.each(possibleWins, function(i,  row){
     if (attacked === false) {
@@ -156,10 +154,10 @@ var aiAttack = function(){
       })
     }
   })
+  // Probably do not need this
   if (attacked === false){
     // checkConflict()
     var move = gameBoard[Math.floor(Math.random()*gameBoard.length)]
-    console.log("random")
     placeAiIcon(move)
   }
 
@@ -182,6 +180,7 @@ var placeAiIcon = function(cellNum) {
   if (elemFinder(cellNum).children().length === 0){
     moveCount += 1
     aiMoves.push(cellNum)
+    checkConflict()
     $("[cell="+cellNum.toString()+"]").html("<img class='ai-icon' src='/assets/ai-icon.jpg'>")
     gameBoard.splice(gameBoard.indexOf(cellNum),1)
   }
@@ -191,6 +190,7 @@ var placeAiIcon = function(cellNum) {
     }
   }
   checkGameWon()
+  // debugger
 }
 
 // user icon placement functions
@@ -212,8 +212,7 @@ var placeUserIcon = function(cellNum){
 // check if game is finished
 var checkGameWon = function(){
   var gameFinished
-  var rows = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],
-              [2,5,8],[3,6,9],[1,5,9],[3,5,7]]
+  var rows = possibleWins
   var canFinishGame = false
   var finishMove
   $.each(rows,function(i,row){

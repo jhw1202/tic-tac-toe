@@ -9,20 +9,30 @@ describe("Game", function(){
   })
 
   describe("when user attacks", function(){
-    it("should find correct move to block", function(){
-      playerMoves.push(1,3)
-      aiMoves.push(5)
-      expect(findMoveToBlock([1,2,3])).toEqual(2)
+    it("should return true when icon placement is valid", function(){
+      expect(placeUserIcon(2)).toEqual(true)
     })
 
-    it("should block a possible winning row", function(){
-      playerMoves.push(1,3)
-      aiMoves.push(5)
-      moveCount = 3
-      makeAiMove({cornerMove: true})
-      expect(aiMoves.sort()).toEqual([2,5])
-    })
+    describe ("must block user", function(){
+      beforeEach(function(){
+        playerMoves.push(1,3)
+        aiMoves.push(5)
+        moveCount = 3
+      })
 
+      it("blockUser should return true when there is a move to block", function(){
+        expect(blockUser()).toEqual(true)
+      })
+
+      it("should find correct move to block", function(){
+        expect(findMoveToBlock([1,2,3])).toEqual(2)
+      })
+
+      it("should block a possible winning row", function(){
+        makeAiMove({cornerMove: true})
+        expect(aiMoves.sort()).toEqual([2,5])
+      })
+    })
   })
 
   describe("updating possible winning rows", function(){
@@ -48,7 +58,6 @@ describe("Game", function(){
         expect(aiMoves.sort()).toEqual([3,5,7])
       })
     })
-
   })
 
 })
