@@ -36,6 +36,17 @@ describe("Game", function(){
   })
 
   describe("updating possible winning rows", function(){
+
+    it("moveInRow should return true if player has a move in that row", function(){
+      playerMoves.push(1)
+      expect(moveInRow({user:true, row:[1,2,3]})).toEqual(true)
+    })
+
+    it("moveInRow should return true if ai has a move in that row", function(){
+      aiMoves.push(5)
+      expect(moveInRow({ai:true, row:[1,5,9]})).toEqual(true)
+    })
+
     it("should filter possiblewins for conflicts", function(){
       playerMoves.push(1,6)
       aiMoves.push(5)
@@ -50,7 +61,13 @@ describe("Game", function(){
   describe("AI attack", function(){
 
     describe("winning game", function(){
-      it("should win game when there is an opportunity", function(){
+      it("should return correct move to win game", function(){
+        playerMoves.push(1,3,6)
+        aiMoves.push(2,5)
+        expect(checkGameWon()).toEqual(8)
+      })
+
+      it("should win game when possible", function(){
         playerMoves.push(1,2,8)
         aiMoves.push(5,3)
         moveCount = 5

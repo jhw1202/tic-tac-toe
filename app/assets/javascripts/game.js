@@ -213,7 +213,6 @@ var placeUserIcon = function(cellNum){
 var checkGameWon = function(){
   var gameFinished
   var rows = possibleWins
-  var canFinishGame = false
   var finishMove
   $.each(rows,function(i,row){
     var counter = 0
@@ -276,24 +275,3 @@ var moveInRow = function(options){
   }
   return move
 }
-
-
-
-
-
-// var ai = false
-// var user = false
-// for (var i = 0; i < playerMoves.length; i++) {
-//   if(user === false && row.indexOf(playerMoves[i]) !== -1){
-//     user = true
-//   }
-// }
-// for (var i = 0; i < aiMoves.length; i++){
-//   if(ai === false && row.indexOf(aiMoves !== -1)){
-//     ai = true
-//   }
-// }
-// if (user && ai){
-//   rowToDelete.push(row)
-// }
-
