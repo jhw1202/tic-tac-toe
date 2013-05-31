@@ -8,6 +8,12 @@ describe("Game", function(){
     moveCount = 0
   })
 
+  describe("icon placement", function(){
+    it("should return correct jquery td object to append icon to", function(){
+      expect(elemFinder(2)).toEqual($("[cell=2]"))
+    })
+  })
+
   describe("when user attacks", function(){
     it("should return true when icon placement is valid", function(){
       expect(placeUserIcon(2)).toEqual(true)
