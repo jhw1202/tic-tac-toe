@@ -1,3 +1,5 @@
 == Cat-tac-toe
 Visit http://cat-tac-toe.herokuapp.com/ to play.
 It is supposed to be unbeatable, but if you do manage to beat it, it would be very helpful if you could send me an email saying how you beat it (what moves you made and what the moves the computer responded with). Thank you
+
+jasmine tests on port 8888
