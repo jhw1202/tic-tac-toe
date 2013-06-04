@@ -39,7 +39,7 @@ var makeAiMove = function(board){
   checkConflict()
   var stringifyMoves = playerMoves.sort().toString()
   if (moveCount === 9) {
-    alert("Game finished")
+    alert("Game finished. It's a tie...")
   }
   else if (moveCount === 1 && board.cornerMove === true) {
     placeAiIcon(5)
@@ -222,7 +222,7 @@ var checkGameWon = function(){
       }
       if (counter === 3){
         gameFinished = true
-        alert("game over")
+        alert("game over. you lost.")
       }
     })
     if (counter === 2){
