@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+  alert("Your move. Beat me if you can")
   $('td').on('click',function(){
     var currentMove = parseInt($(this).attr('cell'))
     // valid move
