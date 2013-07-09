@@ -77,6 +77,7 @@ GEM
       treetop (~> 1.4.8)
     mime-types (1.23)
     multi_json (1.7.3)
+    newrelic_rpm (3.6.3.111)
     nokogiri (1.5.9)
     pg (0.15.1)
     polyglot (0.3.3)
@@ -163,6 +164,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   jasmine
   jquery-rails
+  newrelic_rpm
   pg
   rails (= 3.2.13)
   rspec-rails

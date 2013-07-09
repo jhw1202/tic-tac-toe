@@ -7,6 +7,7 @@ gem 'rails', '3.2.13'
 
 gem 'pg'
 gem 'thin'
+gem 'newrelic_rpm'
 
 group :development, :test do
   gem 'better_errors'
